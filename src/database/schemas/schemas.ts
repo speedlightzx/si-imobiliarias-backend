@@ -1,4 +1,5 @@
 import { varchar } from "drizzle-orm/pg-core";
+import { pgEnum } from "drizzle-orm/pg-core";
 import { integer } from "drizzle-orm/pg-core";
 import { serial } from "drizzle-orm/pg-core";
 import { pgTable } from "drizzle-orm/pg-core";
@@ -21,11 +22,19 @@ export const lists = pgTable('lists', {
     color: varchar('color', { length: 10 })
 })
 
+export const leadStatusEnum = pgEnum('lead_status', [
+    "Frio",
+    "Morno",
+    "Quente"
+])
+
 export const leads = pgTable('leads', {
     id: serial('id').primaryKey(),
     list_id: integer('list_id')
     .references(() => lists.id, {
         onDelete: 'cascade'
     })
-    .notNull()
+    .notNull(),
+    name: varchar('name', { length: 120 }).notNull(),
+    status: leadStatusEnum('status').notNull()
 })
