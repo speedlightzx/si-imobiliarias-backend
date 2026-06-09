@@ -1,5 +1,6 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { createLeadDTO } from './dto/createLead.dto';
+import { updateLeadDTO } from './dto/updateLead.dto';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '@/database/schemas/schemas'
 import { and, eq } from 'drizzle-orm';
@@ -32,5 +33,46 @@ export class LeadsService {
             status: dto.status,
             list_id: dto.listId
         })
+    }
+
+    async updateLead(dto: updateLeadDTO, userId:number, leadId:number) {
+        if(!dto.name && !dto.status && !dto.listId) throw new BadRequestException('Você precisa enviar ao menos um campo para editar.')
+
+        const [leadExists] = await this.db
+        .select()
+        .from(schema.leads)
+        .innerJoin(schema.lists, eq(schema.lists.id, schema.leads.list_id))
+        .where(
+            and(
+                eq(schema.leads.id, leadId),
+                eq(schema.lists.user_id, userId),
+            )
+        )
+        .limit(1)
+
+        if(!leadExists) throw new NotFoundException(`Não foi possível encontrar o lead de ID ${leadId}.`)
+        
+        if(dto.listId) {
+            const [listExists] = await this.db
+            .select()
+            .from(schema.lists)
+            .where(
+                and(
+                    eq(schema.lists.id, dto.listId),
+                    eq(schema.lists.user_id, userId),
+                )
+            )
+
+            if(!listExists) throw new NotFoundException(`Não foi possível encontrar a lista de ID ${dto.listId}.`)
+        }
+
+        await this.db
+        .update(schema.leads)
+        .set({
+            name: dto.name,
+            status: dto.status,
+            list_id: dto.listId
+        })
+        .where(eq(schema.leads.id, leadId))
     }
 }

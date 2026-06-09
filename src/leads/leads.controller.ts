@@ -1,8 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import type { AuthenticatedRequest } from '@/types/AuthenticatedRequest';
 import { AuthGuard } from '@/auth/auth.guard';
 import { createLeadDTO } from './dto/createLead.dto';
+import { updateLeadDTO } from './dto/updateLead.dto';
 
 @Controller('leads')
 export class LeadsController {
@@ -20,5 +21,17 @@ export class LeadsController {
     ) {
         const userId = req.userId
         return await this.leadsService.createLead(body, userId)
+    }
+
+    @Put(':id')
+    @UseGuards(AuthGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async updateLead(
+        @Body() body: updateLeadDTO,
+        @Req() req: AuthenticatedRequest,
+        @Param('id', ParseIntPipe) leadId: number
+    ) {
+        const userId = req.userId
+        return await this.leadsService.updateLead(body, userId, leadId)
     }
 }
