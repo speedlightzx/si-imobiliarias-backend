@@ -1,3 +1,4 @@
+import { LeadStatus } from "@/types/LeadStatusEnum";
 import { varchar } from "drizzle-orm/pg-core";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { integer } from "drizzle-orm/pg-core";
@@ -22,11 +23,7 @@ export const lists = pgTable('lists', {
     color: varchar('color', { length: 10 })
 })
 
-export const leadStatusEnum = pgEnum('lead_status', [
-    "Frio",
-    "Morno",
-    "Quente"
-])
+export const leadStatusEnum = pgEnum('lead_status', LeadStatus)
 
 export const leads = pgTable('leads', {
     id: serial('id').primaryKey(),

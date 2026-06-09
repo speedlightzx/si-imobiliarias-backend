@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as schema from '@/database/schemas/schemas'
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, eq, sql } from 'drizzle-orm';
