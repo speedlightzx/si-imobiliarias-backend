@@ -45,4 +45,15 @@ export class AuthService {
             password: await argon2.hash(credentials.password)
         })
     }
+
+    async isValidToken(token:string): Promise<boolean> {
+        if(!token) return false
+
+        try {
+            const verifiedToken = await this.jwtService.verifyAsync(token)
+            return true
+        } catch(e) {
+            return false
+        }
+    }
 }

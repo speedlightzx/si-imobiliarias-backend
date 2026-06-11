@@ -1,5 +1,5 @@
 services:
-  banco:
+  banco-dados:
     image: postgres:17
     container_name: banco-dados
     volumes:
@@ -9,6 +9,22 @@ services:
       - POSTGRES_DB=sl_imobiliaria
     ports:
       - "5432:5432"
+    networks:
+      - si-teste-tecnico
+
+  backend:
+    container_name: backend
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - banco-dados
+    networks:
+      - si-teste-tecnico
 
 volumes:
   postgres_data:
+
+networks:
+  si-teste-tecnico:
+    name: si-teste-tecnico
